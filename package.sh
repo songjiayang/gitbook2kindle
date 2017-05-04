@@ -26,5 +26,6 @@ arraylength=${#osArray[@]}
 
 for (( i=1; i<${arraylength}+1; i++ ));
 do
+  echo "--> building pkg/gitbook2kindle-$version.${osArray[$i-1]}-${archArray[$i-1]}"
   go build -a -o "pkg/gitbook2kindle-$version.${osArray[$i-1]}-${archArray[$i-1]}" src/github.com/gitbook2kindle/main.go
 done

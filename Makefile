@@ -22,3 +22,7 @@ gopackage:
 	mkdir -p bin && go build -a -o bin/gitbook2kindle src/github.com/gitbook2kindle/main.go
 
 travis: gobuild gotest
+
+release:
+	sh package.sh
+	ghr -replace v0.1.0 pkg/
