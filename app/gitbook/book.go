@@ -68,8 +68,8 @@ func (this *client) DownloadBooks(books []string) (ret map[string]io.ReadCloser)
 }
 
 func (this *client) downloadBook(id string) (r io.ReadCloser) {
-	fmt.Println("start download book: ", id)
-	defer fmt.Println("end download book: ", id)
+	fmt.Println("--> Downloading:", id)
+	defer fmt.Println("--> Downloaded:", id)
 
 	req := this.newRequest("GET", downloadUrl(id))
 

@@ -30,16 +30,16 @@ Run `gitbook2kindle -config` to see current config
 Run `gitbook2kindle -run` to start app and then you can see the logs,
 
 ```
-start download book:  gnuhpc/redis-all-about
-start download book:  zhaoda/webpack
-start download book:  0xax/linux-insides
-start download book:  yeasy/docker_practice
-start download book:  frontendmasters/front-end-handbook
-end download book:  zhaoda/webpack
-end download book:  frontendmasters/front-end-handbook
-end download book:  gnuhpc/redis-all-about
-end download book:  yeasy/docker_practice
-end download book:  0xax/linux-insides
-start send 5 books to kindle: songjiayang@qiniu.com
-end send 5 books to kindle: songjiayang@qiniu.com
+--> Downloading: gnuhpc/redis-all-about
+--> Downloading: yeasy/docker_practice
+--> Downloading: 0xax/linux-insides
+--> Downloading: zhaoda/webpack
+--> Downloading: frontendmasters/front-end-handbook
+--> Downloaded: gnuhpc/redis-all-about
+--> Downloaded: frontendmasters/front-end-handbook
+--> Downloaded: yeasy/docker_practice
+--> Downloaded: zhaoda/webpack
+--> Downloaded: 0xax/linux-insides
+--> Syncing: yeasy/docker_practice, zhaoda/webpack, 0xax/linux-insides, gnuhpc/redis-all-about, frontendmasters/front-end-handbook
+--> Synced: yeasy/docker_practice, zhaoda/webpack, 0xax/linux-insides, gnuhpc/redis-all-about, frontendmasters/front-end-handbook
 ```

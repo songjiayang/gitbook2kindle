@@ -47,7 +47,7 @@ func main() {
 
 func run() {
 	if !cfg.Cfg.IsValid() {
-		panic("No params not set, please run -config and -h to see details")
+		panic("Have params not set yet, please run -config and -h to see details")
 	}
 
 	gClient := gitbook.NewClient()

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/smtp"
+	"strings"
 
 	"github.com/gitbook2kindle/app/cfg"
 	"github.com/jordan-wright/email"
@@ -16,7 +17,6 @@ func InitSmtp() {
 }
 
 func Send(books map[string]io.ReadCloser) {
-	fmt.Println(fmt.Sprintf("start send %d books to kindle: %s", len(books), cfg.Cfg.KindleAccount))
 	defer func() {
 		for _, r := range books {
 			if r != nil {
@@ -30,14 +30,16 @@ func Send(books map[string]io.ReadCloser) {
 	e.To = []string{cfg.Cfg.KindleAccount}
 	e.Subject = "sync gitbook to kindle"
 
+	bookNames := make([]string, 0)
 	for bookName, r := range books {
+		bookNames = append(bookNames, bookName)
 		e.Attach(r, bookName, "")
 	}
 
+	fmt.Println(fmt.Sprintf("--> Syncing: %s", strings.Join(bookNames, ", ")))
 	err := e.Send(cfg.Cfg.SmtpServer, smptAuth)
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Println(fmt.Sprintf("end send %d books to kindle: %s", len(books), cfg.Cfg.KindleAccount))
+	fmt.Println(fmt.Sprintf("--> Synced: %s", strings.Join(bookNames, ", ")))
 }
