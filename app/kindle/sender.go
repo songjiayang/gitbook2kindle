@@ -4,41 +4,40 @@ import (
 	"fmt"
 	"io"
 	"net/smtp"
-	"os"
 
+	"github.com/gitbook2kindle/app/cfg"
 	"github.com/jordan-wright/email"
 )
 
 var smptAuth smtp.Auth
 
-func init() {
-	for _, k := range []string{"SMTP_SERVER", "SMTP_ACCOUNT", "SMTP_PASSWORD", "SMTP_HOST", "KINDLE_ACCOUNT"} {
-		if os.Getenv(k) == "" {
-			panic("No " + k + " Setting")
-		}
-	}
-
-	smptAuth = smtp.PlainAuth("", os.Getenv("SMTP_ACCOUNT"), os.Getenv("SMTP_PASSWORD"), os.Getenv("SMTP_HOST"))
+func InitSmtp() {
+	smptAuth = smtp.PlainAuth("", cfg.Cfg.SmtpAccount, cfg.Cfg.SmtpPassword, cfg.Cfg.SmtpHost)
 }
 
-func SendBook(bookName string, r io.ReadCloser) {
-	fmt.Println("Start send book: ", bookName)
-	defer fmt.Println(fmt.Println("End send book: ", bookName))
-
-	if r == nil {
-		return
-	}
-	defer r.Close()
+func Send(books map[string]io.ReadCloser) {
+	fmt.Println(fmt.Sprintf("start send %d books to kindle: %s", len(books), cfg.Cfg.KindleAccount))
+	defer func() {
+		for _, r := range books {
+			if r != nil {
+				r.Close()
+			}
+		}
+	}()
 
 	e := email.NewEmail()
-	e.From = "gitbook2kindle <" + os.Getenv("SMTP_ACCOUNT") + ">"
-	e.To = []string{os.Getenv("KINDLE_ACCOUNT")}
-	e.Subject = bookName
-	e.Attach(r, bookName, "")
+	e.From = "gitbook2kindle <" + cfg.Cfg.SmtpAccount + ">"
+	e.To = []string{cfg.Cfg.KindleAccount}
+	e.Subject = "sync gitbook to kindle"
 
-	err := e.Send(os.Getenv("SMTP_SERVER"), smptAuth)
+	for bookName, r := range books {
+		e.Attach(r, bookName, "")
+	}
 
+	err := e.Send(cfg.Cfg.SmtpServer, smptAuth)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	fmt.Println(fmt.Sprintf("end send %d books to kindle: %s", len(books), cfg.Cfg.KindleAccount))
 }

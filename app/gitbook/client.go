@@ -2,8 +2,9 @@ package gitbook
 
 import (
 	"net/http"
-	"os"
 	"time"
+
+	"github.com/gitbook2kindle/app/cfg"
 )
 
 var cookie string
@@ -13,7 +14,7 @@ type client struct {
 }
 
 func NewClient() *client {
-	cookie = os.Getenv("GITBOOK_COOKIE")
+	cookie = cfg.Cfg.GitBookCookie
 	if cookie == "" {
 		panic("No GITBOOK_COOKIE Setting")
 	}

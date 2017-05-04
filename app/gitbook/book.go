@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"sync"
 )
 
 type book struct {
@@ -50,9 +51,25 @@ func (this *client) ListStarBooks() (books []*book) {
 	return
 }
 
-func (this *client) DownloadBook(id string) (r io.ReadCloser) {
-	fmt.Println("Start download book: ", id)
-	defer fmt.Println("End download book: ", id)
+func (this *client) DownloadBooks(books []string) (ret map[string]io.ReadCloser) {
+	ret = make(map[string]io.ReadCloser)
+	var wg sync.WaitGroup
+	wg.Add(len(books))
+
+	for _, b := range books {
+		go func(book string, wg *sync.WaitGroup) {
+			defer wg.Done()
+			ret[book] = this.downloadBook(book)
+		}(b, &wg)
+	}
+
+	wg.Wait()
+	return ret
+}
+
+func (this *client) downloadBook(id string) (r io.ReadCloser) {
+	fmt.Println("start download book: ", id)
+	defer fmt.Println("end download book: ", id)
 
 	req := this.newRequest("GET", downloadUrl(id))
 

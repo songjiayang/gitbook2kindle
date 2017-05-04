@@ -1,20 +1,45 @@
 ### gitbook2kindle
 
-A driver help to sync your GitBook with kindle
+A driver help to sync your stared GitBook with kindle.
 
 
-#### ENV Setting
+#### Config App
 
-vi `setting.sh`
+run `gitbook2kindle -h` to see all config options
 
-- `SMTP_SERVER` is smtp server, eg: smtp.gmail.com:587
-- `SMTP_HOST` is smtp host, eg: smtp.gmail.com
-- `SMTP_ACCOUNT` is stmp account, eg: your gmail address
-- `SMTP_PASSWORD` is stmp account password, eg: your gmail password
-- `KINDLE_ACCOUNT` is your kindle address
-- `GITBOOK_COOKIE` is your gitbook account login cookie
+```
+-config.gitbook string
+    config gitbook cookie
+-config.kindle string
+    config kindle account
+-config.smtp.email string
+    config send smtp email
+-config.smtp.host string
+    config send smtp server host
+-config.smtp.password string
+    config send smtp email
+-config.smtp.server string
+    config send smtp server address
 
+```
+
+Run `gitbook2kindle -config` to see current config
 
 #### Run Command
 
-run `make godev` to start app
+Run `gitbook2kindle -run` to start app and then you can see the logs,
+
+```
+start download book:  gnuhpc/redis-all-about
+start download book:  zhaoda/webpack
+start download book:  0xax/linux-insides
+start download book:  yeasy/docker_practice
+start download book:  frontendmasters/front-end-handbook
+end download book:  zhaoda/webpack
+end download book:  frontendmasters/front-end-handbook
+end download book:  gnuhpc/redis-all-about
+end download book:  yeasy/docker_practice
+end download book:  0xax/linux-insides
+start send 5 books to kindle: songjiayang@qiniu.com
+end send 5 books to kindle: songjiayang@qiniu.com
+```
