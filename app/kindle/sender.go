@@ -33,7 +33,7 @@ func Send(books map[string]io.ReadCloser) {
 	bookNames := make([]string, 0)
 	for bookName, r := range books {
 		bookNames = append(bookNames, bookName)
-		e.Attach(r, bookName, "")
+		e.Attach(r, bookName+".mobi", "")
 	}
 
 	fmt.Println(fmt.Sprintf("--> Syncing: %s", strings.Join(bookNames, ", ")))
