@@ -23,7 +23,7 @@ func init() {
 	data, err := ioutil.ReadFile(fpath)
 	if err != nil {
 		fmt.Println(err)
-		Cfg = &cfg{}
+		Cfg = NewCfg()
 
 		if os.IsNotExist(err) {
 			_, err = os.Create(fpath)
@@ -38,8 +38,13 @@ func init() {
 	err = json.Unmarshal(data, &Cfg)
 	if err != nil {
 		fmt.Println(err)
-		Cfg = &cfg{}
+		Cfg = NewCfg()
 		return
+	}
+
+	// 初始化 cached_books
+	if Cfg != nil && Cfg.CachedBooks == nil {
+		Cfg.ResetCache()
 	}
 }
 
@@ -51,10 +56,14 @@ type cfg struct {
 
 	KindleAccount string `json:"kindle_account"`
 	GitBookCookie string `json:"gitbook_cookie"`
+
+	CachedBooks []string `json:"cached_books"`
 }
 
 func NewCfg() *cfg {
-	return &cfg{}
+	ret := &cfg{}
+	ret.ResetCache()
+	return ret
 }
 
 func (this *cfg) Merge(target *cfg) {
@@ -91,13 +100,7 @@ func (this *cfg) Merge(target *cfg) {
 		this.SmtpServer = "smtp.gmail.com:587"
 	}
 
-	d, err := json.Marshal(this)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	ioutil.WriteFile(fpath, d, os.ModePerm)
+	this.Save()
 }
 
 func (this *cfg) ToString() string {
@@ -109,6 +112,16 @@ func (this *cfg) ToString() string {
 	return string(data)
 }
 
+func (this *cfg) Save() {
+	d, err := json.Marshal(this)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	ioutil.WriteFile(fpath, d, os.ModePerm)
+}
+
 func (this *cfg) IsValid() bool {
 	return this.SmtpAccount != "" &&
 		this.SmtpPassword != "" &&
@@ -116,6 +129,23 @@ func (this *cfg) IsValid() bool {
 		this.SmtpServer != "" &&
 		this.KindleAccount != "" &&
 		this.GitBookCookie != ""
+}
+
+func (this *cfg) ResetCache() {
+	this.CachedBooks = make([]string, 0)
+}
+
+func (this *cfg) CacheBook(book string) {
+	this.CachedBooks = append(this.CachedBooks, book)
+}
+
+func (this *cfg) CachedBook(book string) bool {
+	for _, cachedBook := range this.CachedBooks {
+		if cachedBook == book {
+			return true
+		}
+	}
+	return false
 }
 
 func (this *cfg) isEmpty() bool {

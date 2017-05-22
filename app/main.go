@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	runApp, printConfig bool
-	batchSize           int
+	runApp, printConfig, nocache bool
+	batchSize                    int
 )
 
 func main() {
@@ -29,6 +29,7 @@ func main() {
 	// app running flag
 	flag.BoolVar(&runApp, "run", false, "run app")
 	flag.BoolVar(&printConfig, "config", false, "print current config")
+	flag.BoolVar(&nocache, "nocache", false, "run app with no book send cache")
 
 	flag.IntVar(&batchSize, "batchSize", 5, "batch sync size with one email")
 
@@ -59,8 +60,19 @@ func run() {
 
 	kindle.InitSmtp()
 
+	if nocache {
+		cfg.Cfg.ResetCache()
+	}
+
 	sendBooks := make([]string, 0)
 	for _, book := range books {
+		if cfg.Cfg.CachedBook(book.ID) {
+			fmt.Println("--> Skip:", book.ID)
+			continue
+		}
+
+		cfg.Cfg.CacheBook(book.ID)
+
 		sendBooks = append(sendBooks, book.ID)
 		if len(sendBooks) == batchSize {
 			kindle.Send(gClient.DownloadBooks(sendBooks))
@@ -71,4 +83,6 @@ func run() {
 	if len(sendBooks) > 0 {
 		kindle.Send(gClient.DownloadBooks(sendBooks))
 	}
+
+	cfg.Cfg.Save()
 }

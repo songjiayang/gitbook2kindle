@@ -24,5 +24,5 @@ gopackage:
 travis: gobuild gotest
 
 release:
-	sh package.sh
-	ghr -replace v0.1.0 pkg/
+	# sh package.sh
+	ghr -replace v${BUILD_VERSION} pkg/
